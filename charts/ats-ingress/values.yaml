@@ -1,0 +1,202 @@
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+# Default values for ats-ingress.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Enable RBAC Authorization
+## ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+rbac:
+  create: true
+
+## Configure Service Account
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccount:
+  create: true
+  name:
+
+## Override name / fullname for the controller
+nameOverride: ""
+fullnameOverride: ""
+
+## Controller default values
+controller:
+  name: controller
+
+  ## Image Information
+  image:
+    repository: ghcr.io/apache/ats-ingress
+    pullPolicy: IfNotPresent
+    tag: latest
+
+  ## Private Registry configuration
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imageCredentials:
+    registry: null
+    username: null
+    password: null
+  existingImagePullSecret: null
+
+  ## optionally override entrypoint
+  command: ""
+
+  ## Additional command line arguments to pass to Controller
+  extraArgs: []
+
+  ## Security Context for pod
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  podSecurityContext: {}
+
+  ## Security Context for container
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  securityContext: {}
+
+  ## Controller Container liveness/readiness probe configuration
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe: {}
+  readinessProbe: {}
+  startupProbe: {}  
+
+  ## Controller Service configuration
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    type: NodePort
+
+    ## Service annotations
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    annotations: {}
+
+    ## Service labels
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+    labels: {}
+    
+    http:
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+    https:
+      port: 8443
+      targetPort: 8443
+      nodePort: 30443
+
+    # clusterIP: ""
+
+    # sessionAffinity: ""
+
+    # externalTrafficPolicy: "Local"
+    
+    healthCheckNodePort: 0
+
+    externalIPs: []
+
+    loadBalancerIP: ""
+
+    loadBalancerSourceRanges: []
+
+  replicaCount: 1
+  
+  autoscaling:
+    enabled: false
+
+  ## SSL certificate information
+  ssl:
+    path: "/etc/ats/ssl"
+    name: ats-ssl
+    secret: tls-secret
+
+  ## log location for ATS and controller program
+  log:
+    trafficserver:
+      dir: /opt/ats/var/log/trafficserver
+    ingress:
+      dir: /opt/ats/var/log/ingress
+
+  ## Additional labels to add to the deployment or daemonset metadata
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  extraLabels: {}
+
+  ## Additional labels to add to the pod container metadata
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+
+  ## Additional annotations to add to the pod container metadata
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  podAnnotations: {}
+
+  ## Set additional environment variables
+  extraEnvs: []
+
+  ## Add additional containers
+  extraContainers: []
+
+  ## Volumes required by additional containers
+  extraVolumes: []
+
+  ## Volume Mounts 
+  extraVolumeMounts: []
+
+  ## Init Containers
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  initContainers: []
+
+  ## Pod Node assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  nodeSelector: {}
+
+  ## Node Taints and Tolerations for pod-node scheduling through attraction/repelling
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  tolerations: []
+
+  ## Node Affinity for pod-node scheduling constraints
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  affinity: {}
+
+  ## Topology spread constraints
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+  topologySpreadConstraints: []
+
+  ## Pod DNS Config
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+  dnsConfig: {}
+
+  ## Pod DNS Policy
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+  dnsPolicy: Default
+
+  ## Controller Pod PriorityClass
+  ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+  priorityClassName: ""
+
+  ## Compute Resources for controller container
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  resources: {}
+
+  ## Controller deployment strategy definition
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  strategy: {}
+
+  ## Controller container lifecycle handlers
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+  lifecycle: {}
+
+  ## Pod termination grace period
+  ## ref: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+  terminationGracePeriodSeconds: 60
+
+  ## minimum number of seconds for which a newly created Pod should be ready
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#min-ready-seconds
+  minReadySeconds: 30
